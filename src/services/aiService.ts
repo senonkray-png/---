@@ -57,7 +57,7 @@ export async function generateQuestion(
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'cognitivecomputations/dolphin-mistral-24b-venice-edition:free',
+      model: 'gryphe/mythomax-l2-13b',
       messages: [
         { role: 'user', content: userMessage },
       ],
