@@ -24,20 +24,26 @@ export default function SettingsScreen() {
   }
 
   return (
-    <div className="flex flex-col min-h-dvh px-4 py-6">
+    <div
+      className="flex flex-col h-dvh w-full max-w-lg mx-auto px-4"
+      style={{ paddingTop: 'max(env(safe-area-inset-top), 20px)', paddingBottom: 'max(env(safe-area-inset-bottom), 16px)' }}
+    >
       {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3 py-4 sm:py-5 shrink-0">
         <button
           onClick={() => setScreen('start')}
-          className="text-[var(--text-secondary)] hover:text-white transition-colors"
+          className="text-[var(--text-secondary)] hover:text-white transition-colors p-1"
         >
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <h1 className="text-2xl font-bold">Настройки</h1>
+        <h1 className="text-xl sm:text-2xl font-bold">Настройки</h1>
       </div>
 
+      {/* Scrollable content */}
+      <div className="flex-1 overflow-y-auto space-y-3 sm:space-y-4 pb-2">
+
       {/* API Key */}
-      <div className="bg-[var(--bg-card)] rounded-xl p-4 mb-4 animate-fade-in">
+      <div className="bg-[var(--bg-card)] rounded-xl p-4 sm:p-5 animate-fade-in">
         <div className="flex items-center gap-2 mb-2">
           <Key className="w-4 h-4 text-[var(--accent-purple)]" />
           <h2 className="font-semibold">API Ключ OpenRouter</h2>
@@ -55,7 +61,7 @@ export default function SettingsScreen() {
       </div>
 
       {/* Custom Interval */}
-      <div className="bg-[var(--bg-card)] rounded-xl p-4 mb-4 animate-fade-in">
+      <div className="bg-[var(--bg-card)] rounded-xl p-4 sm:p-5 animate-fade-in">
         <h2 className="font-semibold mb-2">Интервал своих вопросов</h2>
         <div className="flex items-center gap-3">
           <span className="text-sm text-[var(--text-secondary)]">Каждые</span>
@@ -76,7 +82,7 @@ export default function SettingsScreen() {
       </div>
 
       {/* Add Custom Question */}
-      <div className="bg-[var(--bg-card)] rounded-xl p-4 mb-4 animate-fade-in">
+      <div className="bg-[var(--bg-card)] rounded-xl p-4 sm:p-5 animate-fade-in">
         <h2 className="font-semibold mb-3">Добавить свой вопрос</h2>
 
         <div className="flex gap-2 mb-3">
@@ -122,11 +128,11 @@ export default function SettingsScreen() {
 
       {/* Custom Questions List */}
       {customQuestions.length > 0 && (
-        <div className="bg-[var(--bg-card)] rounded-xl p-4 animate-fade-in">
-          <h2 className="font-semibold mb-3">
+        <div className="bg-[var(--bg-card)] rounded-xl p-4 sm:p-5 animate-fade-in">
+          <h2 className="font-semibold mb-3 text-sm sm:text-base">
             Мои вопросы ({customQuestions.length})
           </h2>
-          <div className="space-y-2 max-h-60 overflow-y-auto">
+          <div className="space-y-2">
             {customQuestions.map((q, i) => (
               <div
                 key={i}
@@ -153,6 +159,8 @@ export default function SettingsScreen() {
           </div>
         </div>
       )}
+
+      </div>
     </div>
   )
 }
