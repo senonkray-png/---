@@ -48,23 +48,19 @@ export async function generateQuestion(
 
   const key = apiKey || (import.meta.env.VITE_OPENROUTER_API_KEY as string)
 
+  const userMessage = `${systemPrompt}\n\nСгенерируй ${type === 'truth' ? 'вопрос "Правда"' : 'задание "Действие"'} для ${playerName}.`
+
   const response = await fetch(OPENROUTER_URL, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
       Authorization: `Bearer ${key}`,
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       model: 'cognitivecomputations/dolphin-mistral-24b-venice-edition:free',
       messages: [
-        { role: 'system', content: systemPrompt },
-        {
-          role: 'user',
-          content: `Сгенерируй ${type === 'truth' ? 'вопрос "Правда"' : 'задание "Действие"'} для ${playerName}.`,
-        },
+        { role: 'user', content: userMessage },
       ],
-      max_tokens: 200,
-      temperature: 0.9,
     }),
   })
 
