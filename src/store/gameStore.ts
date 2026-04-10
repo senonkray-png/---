@@ -74,7 +74,7 @@ export const useGameStore = create<GameState>()(
       settings: {
         randomWheel: false,
         customInterval: 5,
-        apiKey: '',
+        apiKey: import.meta.env.VITE_OPENROUTER_API_KEY ?? '',
       },
       customQuestions: [],
       history: [],

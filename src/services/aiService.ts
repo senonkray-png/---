@@ -46,14 +46,16 @@ export async function generateQuestion(
 ): Promise<string> {
   const systemPrompt = buildSystemPrompt(type, playerName, history, preferences)
 
+  const key = apiKey || (import.meta.env.VITE_OPENROUTER_API_KEY as string)
+
   const response = await fetch(OPENROUTER_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
+      Authorization: `Bearer ${key}`,
     },
     body: JSON.stringify({
-      model: 'cognitivecomputations/dolphin-mixtral-8x7b',
+      model: 'cognitivecomputations/dolphin-mistral-24b-venice-edition:free',
       messages: [
         { role: 'system', content: systemPrompt },
         {
