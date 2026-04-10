@@ -39,7 +39,7 @@ function GenderToggle({
 export default function StartScreen() {
   const [newName, setNewName] = useState('')
   const [showInput, setShowInput] = useState(false)
-  const { players, addPlayer, removePlayer, setPlayerGender, settings, setScreen } = useGameStore()
+  const { players, addPlayer, removePlayer, setPlayerGender, setScreen } = useGameStore()
 
   const handleAdd = () => {
     const trimmed = newName.trim()
