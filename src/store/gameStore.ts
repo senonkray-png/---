@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware'
 export interface Player {
   id: string
   name: string
+  gender: 'male' | 'female'
 }
 
 export interface CustomQuestion {
@@ -40,6 +41,7 @@ interface GameState {
   // Player actions
   addPlayer: (name: string) => void
   removePlayer: (id: string) => void
+  setPlayerGender: (id: string, gender: 'male' | 'female') => void
 
   // Settings
   updateSettings: (s: Partial<Settings>) => void
@@ -84,7 +86,12 @@ export const useGameStore = create<GameState>()(
 
       addPlayer: (name) =>
         set((s) => ({
-          players: [...s.players, { id: crypto.randomUUID(), name }],
+          players: [...s.players, { id: crypto.randomUUID(), name, gender: 'male' }],
+        })),
+
+      setPlayerGender: (id, gender) =>
+        set((s) => ({
+          players: s.players.map((p) => (p.id === id ? { ...p, gender } : p)),
         })),
 
       removePlayer: (id) =>

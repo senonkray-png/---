@@ -22,6 +22,7 @@ body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   min-height: 100dvh;
   overflow-x: hidden;
+  overflow-y: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
