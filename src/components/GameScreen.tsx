@@ -219,91 +219,94 @@ export default function GameScreen() {
 
   return (
     <div
-      className="flex flex-col h-dvh w-full max-w-lg mx-auto px-4"
-      style={{ paddingTop: 'max(env(safe-area-inset-top), 20px)', paddingBottom: 'max(env(safe-area-inset-bottom), 16px)' }}
+      className="flex flex-col h-dvh w-full"
+      style={{
+        background: '#0a0a0f',
+        paddingTop: 'max(env(safe-area-inset-top), 16px)',
+        paddingBottom: 'max(env(safe-area-inset-bottom), 16px)',
+      }}
     >
       {/* Top Bar */}
-      <div className="flex items-center shrink-0 py-3 sm:py-4">
+      <div className="flex items-center px-5 py-3 shrink-0">
         <button
           onClick={() => setScreen('start')}
-          className="text-[var(--text-secondary)] hover:text-white transition-colors p-1"
+          className="w-10 h-10 flex items-center justify-center text-white/60 hover:text-white transition-colors"
         >
           <ArrowLeft className="w-6 h-6" />
         </button>
-        <div className="flex-1 text-center">
-          <span className="text-xs text-[var(--text-secondary)] uppercase tracking-widest">
+        <div className="flex-1 flex flex-col items-center">
+          <span className="text-xs text-white/50 uppercase tracking-widest font-medium">
             Ход игрока
           </span>
+          <span
+            className={`text-2xl sm:text-3xl font-bold text-white mt-0.5 transition-all ${
+              rouletteActive ? 'roulette-active text-[var(--accent-pink)]' : ''
+            }`}
+          >
+            {displayName}
+          </span>
         </div>
-        <div className="w-8" />
+        <div className="w-10" />
       </div>
 
-      {/* Player Name */}
-      <div
-        className={`text-3xl sm:text-4xl font-bold text-center py-4 sm:py-6 shrink-0 transition-all ${
-          rouletteActive ? 'roulette-active text-[var(--accent-pink)]' : ''
-        }`}
-      >
-        {displayName}
-      </div>
-
-      {/* Main content area */}
-      <div className="flex-1 flex flex-col justify-center">
+      {/* Main area */}
+      <div className="flex-1 flex flex-col justify-center px-4 sm:px-5 gap-5">
 
         {/* Loader */}
         {loading && (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-12 h-12 sm:w-14 sm:h-14 text-[var(--accent-purple)] animate-spin" />
+          <div className="flex items-center justify-center">
+            <Loader2 className="w-14 h-14 text-[var(--accent-purple)] animate-spin" />
           </div>
         )}
 
         {/* Error */}
         {error && (
-          <div className="bg-red-900/30 border border-red-500/30 rounded-xl p-4 text-center animate-fade-in">
-            <p className="text-red-400 text-sm">{error}</p>
+          <div className="bg-red-900/30 border border-red-500/30 rounded-2xl p-5 text-center animate-fade-in">
+            <p className="text-red-400 text-base">{error}</p>
           </div>
         )}
 
         {/* Question card */}
         {questionText && !loading && (
-          <div className="flex flex-col gap-4 sm:gap-5 animate-fade-in">
-            <div className="bg-[var(--bg-card)] rounded-2xl p-5 sm:p-6">
+          <div className="animate-fade-in">
+            <div
+              className="rounded-3xl p-6 sm:p-8"
+              style={{ background: '#1a1f3c' }}
+            >
               {isCustom && (
-                <span className="text-xs bg-[var(--accent-purple)]/20 text-[var(--accent-purple)] px-2 py-1 rounded mb-3 inline-block">
+                <span className="text-xs bg-[var(--accent-purple)]/20 text-[var(--accent-purple)] px-2 py-1 rounded-full mb-4 inline-block">
                   Свой вопрос
                 </span>
               )}
-              <p className="text-base sm:text-lg leading-relaxed">{questionText}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-white leading-snug">
+                {questionText}
+              </p>
             </div>
 
-            {/* Like / Dislike / Reroll */}
-            <div className="flex items-center justify-center gap-3 sm:gap-4">
+            {/* Reroll / Like / Dislike */}
+            <div className="flex items-center justify-center gap-2 sm:gap-3 mt-5">
               <button
                 onClick={handleReroll}
-                className="flex items-center gap-2 bg-[var(--bg-card)] hover:bg-[var(--bg-secondary)] rounded-xl px-4 py-3 sm:py-4 text-[var(--text-secondary)] transition-colors"
+                className="flex items-center gap-2 bg-white/10 hover:bg-white/20 active:bg-white/30 rounded-full px-5 py-2.5 text-white/80 transition-colors"
               >
-                <RefreshCw className="w-5 h-5" />
-                <span className="text-sm sm:text-base">Заменить</span>
+                <RefreshCw className="w-4 h-4" />
+                <span className="text-sm font-medium">Заменить</span>
               </button>
               <button
                 onClick={handleLike}
-                className={`rounded-xl p-3 sm:p-4 transition-colors ${
-                  liked
-                    ? 'bg-green-600 text-white'
-                    : 'bg-[var(--bg-card)] hover:bg-green-600/20 text-[var(--text-secondary)]'
+                className={`rounded-full p-2.5 transition-colors ${
+                  liked ? 'bg-green-500/30 text-green-400' : 'bg-white/10 hover:bg-white/20 text-white/60'
                 }`}
               >
-                <ThumbsUp className="w-5 h-5 sm:w-6 sm:h-6" />
+                <ThumbsUp className="w-5 h-5" />
               </button>
               <button
                 onClick={handleDislike}
-                className={`rounded-xl p-3 sm:p-4 transition-colors ${
-                  disliked
-                    ? 'bg-red-600 text-white'
-                    : 'bg-[var(--bg-card)] hover:bg-red-600/20 text-[var(--text-secondary)]'
+                className={`rounded-full p-2.5 transition-colors ${
+                  disliked ? 'bg-red-500/30 text-red-400' : 'bg-white/10 hover:bg-white/20 text-white/60'
                 }`}
               >
-                <ThumbsDown className="w-5 h-5 sm:w-6 sm:h-6" />
+                <ThumbsDown className="w-5 h-5" />
               </button>
             </div>
           </div>
@@ -314,33 +317,37 @@ export default function GameScreen() {
           <div className="flex flex-col gap-4 sm:gap-5">
             <button
               onClick={() => handleChoice('truth')}
-              className="w-full bg-gradient-to-r from-[var(--accent-purple)] to-purple-800 hover:opacity-90 rounded-2xl px-6 py-7 sm:py-9 text-2xl sm:text-3xl font-bold transition-opacity active:scale-95 transform"
+              className="w-full rounded-3xl px-6 py-8 sm:py-10 text-3xl sm:text-4xl font-bold text-white active:scale-95 transition-transform"
+              style={{ background: 'linear-gradient(135deg, #6d28d9, #4c1d95)' }}
             >
               🔮 ПРАВДА
             </button>
             <button
               onClick={() => handleChoice('dare')}
-              className="w-full bg-gradient-to-r from-[var(--accent-pink)] to-red-800 hover:opacity-90 rounded-2xl px-6 py-7 sm:py-9 text-2xl sm:text-3xl font-bold transition-opacity active:scale-95 transform"
+              className="w-full rounded-3xl px-6 py-8 sm:py-10 text-3xl sm:text-4xl font-bold text-white active:scale-95 transition-transform"
+              style={{ background: 'linear-gradient(135deg, #e94560, #be123c)' }}
             >
               🔥 ДЕЙСТВИЕ
             </button>
           </div>
         )}
-
       </div>
 
-      {/* Next turn button — bottom */}
-      {questionText && !loading && (
-        <div className="shrink-0 pt-3 sm:pt-4">
+      {/* Next turn button */}
+      <div className="px-4 sm:px-5 shrink-0 pt-2">
+        {questionText && !loading ? (
           <button
             onClick={handleNext}
-            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[var(--accent-pink)] to-[var(--accent-purple)] hover:opacity-90 rounded-xl px-4 py-4 sm:py-5 text-base sm:text-lg font-bold transition-opacity"
+            className="w-full rounded-2xl py-5 sm:py-6 text-xl sm:text-2xl font-bold text-white flex items-center justify-center gap-2 active:scale-[0.97] transition-transform"
+            style={{ background: 'linear-gradient(90deg, #e94560, #8b5cf6)' }}
           >
             Следующий ход
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-6 h-6" />
           </button>
-        </div>
-      )}
+        ) : (
+          <div className="h-16 sm:h-20" />
+        )}
+      </div>
     </div>
   )
 }
