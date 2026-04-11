@@ -186,106 +186,129 @@ export default function GameScreen() {
 
   return (
     <div
-      className="flex flex-col h-dvh w-full relative"
+      className="flex flex-col h-dvh w-full relative overflow-hidden"
       style={{
         paddingTop: 'max(env(safe-area-inset-top), 12px)',
         paddingBottom: 'max(env(safe-area-inset-bottom), 12px)',
       }}
     >
-      {/* Background */}
+      {/* ── Background ── */}
       <div
         className="absolute inset-0 -z-10"
-        style={{
-          background: questionText
-            ? 'linear-gradient(180deg, #f8c8d4 0%, #f0a0b8 50%, #e88ca0 100%)'
-            : 'linear-gradient(180deg, #87ceeb 0%, #b5d8e8 30%, #d4e8f0 60%, #a8c8d8 100%)',
-        }}
+        style={
+          questionText
+            ? {
+                backgroundImage: 'url(/bg-sunset.jpg)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }
+            : {
+                backgroundImage: 'url(/sky.jpg)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center top',
+              }
+        }
       />
+      {/* dim overlay on question screen */}
+      {questionText && (
+        <div className="absolute inset-0 -z-10 bg-black/55" />
+      )}
 
-      {/* Header — back arrow */}
-      <div className="flex items-center px-4 py-2 shrink-0">
+      {/* ── Header ── */}
+      <div className="flex items-center px-3 py-1 shrink-0">
         <button
           onClick={() => setScreen('start')}
-          className="w-10 h-10 flex items-center justify-center"
+          className="w-11 h-11 flex items-center justify-center rounded-full bg-black/20 backdrop-blur-sm active:scale-90 transition-transform"
         >
-          <ChevronLeft className="w-8 h-8 text-white/70" />
+          <ChevronLeft className="w-7 h-7 text-white" />
         </button>
       </div>
 
-      {/* Banner — player name */}
-      <div className="flex justify-center shrink-0 px-4 mb-4">
-        <div
-          className="relative px-8 py-3 sm:py-4"
-          style={{
-            background: 'linear-gradient(135deg, #a0a0a0, #d0d0d0, #a0a0a0)',
-            clipPath: 'polygon(5% 0%, 95% 0%, 100% 50%, 95% 100%, 5% 100%, 0% 50%)',
-          }}
-        >
-          <div className="text-center">
-            <p className="text-[10px] sm:text-xs text-black/60 uppercase tracking-widest font-medium">{l.playerTurn}</p>
-            <p
-              className={`text-3xl sm:text-4xl font-black text-black leading-none mt-0.5 transition-all ${
-                rouletteActive ? 'roulette-active' : ''
-              }`}
-            >
-              {displayName}
-            </p>
+      {/* ── Player name banner (question screen only) ── */}
+      {questionText && (
+        <div className="flex justify-center shrink-0 px-4 mt-2 mb-1">
+          <div
+            className="relative px-10 py-2.5"
+            style={{
+              background:
+                'linear-gradient(135deg, #7a7a7a 0%, #c0c0c0 25%, #e8e8e8 50%, #c0c0c0 75%, #7a7a7a 100%)',
+              clipPath: 'polygon(7% 0%, 93% 0%, 100% 50%, 93% 100%, 7% 100%, 0% 50%)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.45)',
+            }}
+          >
+            <div className="text-center">
+              <p
+                className="uppercase font-semibold text-black/50"
+                style={{ fontSize: '9px', letterSpacing: '0.22em' }}
+              >
+                {l.playerTurn}
+              </p>
+              <p
+                className={`font-black text-black leading-none mt-0.5 transition-all ${
+                  rouletteActive ? 'roulette-active' : ''
+                }`}
+                style={{ fontSize: '34px' }}
+              >
+                {displayName}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Main area */}
-      <div className="flex-1 flex flex-col justify-center px-4">
+      {/* ── Main area ── */}
+      <div className="flex-1 flex flex-col items-center overflow-hidden">
 
         {loading && (
-          <div className="flex items-center justify-center">
-            <Loader2 className="w-16 h-16 text-black/40 animate-spin" />
+          <div className="flex-1 flex items-center justify-center">
+            <Loader2 className="w-16 h-16 text-white/60 animate-spin" />
           </div>
         )}
 
         {error && (
-          <div className="bg-black/20 rounded-2xl p-5 text-center animate-fade-in">
-            <p className="text-red-700 text-base font-medium">{error}</p>
+          <div className="flex-1 flex items-center justify-center w-full" style={{ paddingLeft: '16px', paddingRight: '16px' }}>
+            <div
+              className="w-full max-w-sm rounded-2xl p-5 text-center"
+              style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)' }}
+            >
+              <p className="text-red-300 text-base font-medium">{error}</p>
+            </div>
           </div>
         )}
 
-        {/* Question card — arch shape */}
+        {/* ── Question card ── */}
         {questionText && !loading && (
-          <div className="animate-fade-in flex flex-col items-center">
-            <div className="w-full max-w-sm">
-              {/* Arch SVG top */}
-              <svg viewBox="0 0 320 80" className="w-full" preserveAspectRatio="none">
+          <div className="flex-1 flex items-center justify-center w-full" style={{ paddingLeft: '16px', paddingRight: '16px' }}>
+            <div className="animate-fade-in w-full max-w-sm">
+              {/* Arch top */}
+              <svg viewBox="0 0 320 70" className="w-full" preserveAspectRatio="none">
                 <path
-                  d="M0 80 L0 40 Q0 0 40 0 L280 0 Q320 0 320 40 L320 80 Z"
-                  fill="#1a1a1a"
-                  stroke="#333"
-                  strokeWidth="2"
+                  d="M0 70 L0 35 Q0 0 38 0 L282 0 Q320 0 320 35 L320 70 Z"
+                  fill="#130f0e"
                 />
-                {/* Decorative inner arches */}
                 <path
-                  d="M20 80 L20 50 Q20 15 55 15 L265 15 Q300 15 300 50 L300 80"
+                  d="M18 70 L18 45 Q18 14 50 14 L270 14 Q302 14 302 45 L302 70"
                   fill="none"
-                  stroke="#444"
+                  stroke="#3a3530"
                   strokeWidth="1.5"
                 />
                 <path
-                  d="M35 80 L35 55 Q35 25 65 25 L255 25 Q285 25 285 55 L285 80"
+                  d="M32 70 L32 52 Q32 24 60 24 L260 24 Q288 24 288 52 L288 70"
                   fill="none"
-                  stroke="#555"
+                  stroke="#4a4540"
                   strokeWidth="1"
                 />
               </svg>
-              {/* Card body */}
               <div
-                className="rounded-b-3xl px-5 py-6 sm:px-6 sm:py-8 border-x-2 border-b-2 border-[#333] -mt-px"
-                style={{ background: '#1a1a1a' }}
+                className="rounded-b-3xl border-x-2 border-b-2 -mt-px"
+                style={{ background: '#130f0e', borderColor: '#3a3530', paddingLeft: '24px', paddingRight: '24px', paddingTop: '28px', paddingBottom: '28px' }}
               >
                 {isCustom && (
                   <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full mb-3 inline-block">
                     {l.customQuestion}
                   </span>
                 )}
-                <p className="text-white font-bold text-xl sm:text-2xl leading-snug text-center">
+                <p className="text-white font-bold text-xl leading-snug text-center">
                   {questionText}
                 </p>
               </div>
@@ -293,59 +316,104 @@ export default function GameScreen() {
           </div>
         )}
 
-        {/* Choice buttons — signpost style */}
+        {/* ── Signpost choice ── */}
         {!questionText && !loading && (
-          <div className="flex flex-col items-center gap-6 sm:gap-8">
+          <div className="relative w-full" style={{ maxWidth: '1120px' }}>
+            <img
+              src="/signpost.png"
+              alt=""
+              draggable={false}
+              className="w-full h-auto select-none translate-y-21 scale-125 max-w-none"
+            />
+            {/* Player name overlay on ribbon */}
+            <div
+              className="absolute left-1/2"
+              style={{
+                top: '3.5%',
+                transform: 'translateX(-50%)',
+                textAlign: 'center',
+                pointerEvents: 'none',
+                width: '55%',
+              }}
+            >
+              <p
+                className="uppercase font-semibold"
+                style={{ fontSize: '10px', letterSpacing: '0.22em', color: 'rgb(8, 8, 8)', textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}
+              >
+                {l.playerTurn}
+              </p>
+              <p
+                className={`font-black leading-none mt-0.5 ${rouletteActive ? 'roulette-active' : ''}`}
+                style={{ fontSize: 'clamp(38px, 7vw, 66px)', color: '#ffffff', textShadow: '0 1px 4px rgba(0,0,0,0.8)' }}
+              >
+                {displayName}
+              </p>
+            </div>
+            {/* Dare invisible tap zone */}
             <button
               onClick={() => handleChoice('dare')}
-              className="w-72 sm:w-80 py-5 sm:py-6 bg-[#1a1a1a] rounded-2xl text-white text-3xl sm:text-4xl font-black tracking-tight active:scale-95 transition-transform border-2 border-[#333] shadow-xl"
-              style={{ fontStyle: 'italic' }}
-            >
-              {l.dare}
-            </button>
+              className="absolute active:opacity-50 transition-opacity"
+              style={{
+                top: '38%',
+                left: '9%',
+                width: '74%',
+                height: '18%',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                WebkitTapHighlightColor: 'transparent',
+                outline: 'none',
+              }}
+              aria-label={l.dare}
+            />
+            {/* Truth invisible tap zone */}
             <button
               onClick={() => handleChoice('truth')}
-              className="w-72 sm:w-80 py-5 sm:py-6 bg-[#1a1a1a] rounded-2xl text-white text-3xl sm:text-4xl font-black tracking-tight active:scale-95 transition-transform border-2 border-[#333] shadow-xl"
-              style={{ fontStyle: 'italic' }}
-            >
-              {l.truth}
-            </button>
+              className="absolute active:opacity-50 transition-opacity"
+              style={{
+                top: '60%',
+                left: '2%',
+                right: '4%',
+                height: '16%',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                WebkitTapHighlightColor: 'transparent',
+                outline: 'none',
+              }}
+              aria-label={l.truth}
+            />
           </div>
         )}
       </div>
 
-      {/* Bottom controls */}
+      {/* ── Bottom controls ── */}
       <div className="shrink-0 px-4 pt-2 space-y-3">
         {questionText && !loading && (
           <>
-            {/* Like / Reroll / Dislike */}
-            <div className="flex items-center justify-center gap-6 sm:gap-8">
+            <div className="flex items-center justify-center gap-8">
               <button
                 onClick={handleLike}
-                className={`transition-transform active:scale-90 ${liked ? 'text-red-500' : 'text-black/70'}`}
+                className={`transition-transform active:scale-90 ${liked ? 'text-red-400' : 'text-white/60'}`}
               >
-                <Heart className="w-8 h-8 sm:w-10 sm:h-10" fill={liked ? 'currentColor' : 'none'} />
+                <Heart className="w-8 h-8" fill={liked ? 'currentColor' : 'none'} />
               </button>
-              <button
-                onClick={handleReroll}
-                className="text-black/70 active:scale-90 transition-transform"
-              >
-                <RefreshCw className="w-7 h-7 sm:w-9 sm:h-9" />
+              <button onClick={handleReroll} className="text-white/60 active:scale-90 transition-transform">
+                <RefreshCw className="w-7 h-7" />
               </button>
               <button
                 onClick={handleDislike}
-                className={`transition-transform active:scale-90 ${disliked ? 'text-red-500' : 'text-black/70'}`}
+                className={`transition-transform active:scale-90 ${disliked ? 'text-red-400' : 'text-white/60'}`}
               >
-                <HeartCrack className="w-8 h-8 sm:w-10 sm:h-10" />
+                <HeartCrack className="w-7 h-7" />
               </button>
             </div>
-
-            {/* Next turn */}
             <button
               onClick={handleNext}
-              className="w-full bg-black/90 rounded-2xl py-4 sm:py-5 flex items-center justify-center gap-2 active:scale-[0.97] transition-transform"
+              className="w-full rounded-2xl py-4 flex items-center justify-center gap-2 active:scale-[0.97] transition-transform"
+              style={{ background: 'rgba(0,0,0,0.55)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)' }}
             >
-              <span className="text-white text-xl sm:text-2xl font-bold">{l.nextTurn}</span>
+              <span className="text-white text-xl font-bold">{l.nextTurn}</span>
               <ChevronRight className="w-6 h-6 text-white" />
             </button>
           </>

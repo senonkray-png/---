@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { t } from '../services/i18n'
-import { ChevronLeft, Trash2, Send } from 'lucide-react'
+import { ArrowLeft, Trash2, Send } from 'lucide-react'
 
 export default function SettingsScreen() {
   const {
@@ -34,64 +34,65 @@ export default function SettingsScreen() {
       style={{
         paddingTop: 'max(env(safe-area-inset-top), 12px)',
         paddingBottom: 'max(env(safe-area-inset-bottom), 12px)',
+        backgroundImage: 'url(/bg-sunset.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
       }}
     >
-      {/* Background */}
-      <div
-        className="absolute inset-0 -z-10"
-        style={{
-          background: 'linear-gradient(180deg, #d4849a 0%, #c97090 20%, #8b3060 50%, #3d1530 100%)',
-        }}
-      />
+      {/* Dark overlay */}
+      <div className="absolute inset-0 -z-10 bg-black/40" />
 
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 shrink-0">
+      <div className="flex items-center px-4 py-3 shrink-0">
         <button
           onClick={() => setScreen('start')}
-          className="w-12 h-12 flex items-center justify-center"
+          className="w-12 h-12 flex items-center justify-center shrink-0"
         >
-          <ChevronLeft className="w-8 h-8 text-white/70" />
+          <ArrowLeft className="w-7 h-7 text-white" />
         </button>
-        <h1 className="text-2xl sm:text-3xl font-bold text-white">{l.settings}</h1>
+        <h1 className="flex-1 text-center text-2xl font-bold text-white pr-12">{l.settings}</h1>
       </div>
 
       {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto px-4 space-y-3 pb-4">
+      <div className="flex-1 overflow-y-auto px-4 flex flex-col gap-3 pb-4">
 
         {/* API Key */}
-        <div className="bg-black/70 rounded-2xl p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-lg">🔑</span>
-            <span className="text-white font-semibold text-sm">{l.apiKey}</span>
+        <div className="bg-black/80 rounded-2xl p-8">
+          <div className="flex items-center gap-2 mb-3" style={{ paddingLeft: '8px', paddingRight: '8px' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+            </svg>
+            <span className="text-white font-semibold text-base">{l.apiKey}</span>
           </div>
           <input
             type="password"
             value={settings.apiKey}
             onChange={(e) => updateSettings({ apiKey: e.target.value })}
             placeholder="sk-or-v1-..."
-            className="w-full bg-black/40 rounded-xl px-3 py-2.5 outline-none text-white text-sm border border-white/10 focus:border-white/30 placeholder:text-white/30"
+            style={{ paddingBottom: '8px', paddingLeft: '4px', paddingRight: '4px' }}
+            className="w-full bg-transparent border-b border-white/30 outline-none text-white text-sm focus:border-white/70 placeholder:text-white/30 transition-colors"
           />
-          <p className="text-xs text-white/40 mt-1">{l.getKey}</p>
+          <p className="text-xs text-white/40 mt-2" style={{ paddingLeft: '8px', paddingRight: '8px' }}>{l.getKey}</p>
         </div>
 
         {/* Language toggle */}
-        <div className="flex rounded-2xl overflow-hidden h-12 border border-white/20">
+        <div className="flex rounded-2xl overflow-hidden h-12">
           <button
             onClick={() => updateSettings({ language: 'uk' })}
-            className={`flex-1 flex items-center justify-center text-lg font-bold transition-colors ${
+            className={`flex-1 flex items-center justify-center text-base font-bold transition-colors ${
               settings.language === 'uk'
-                ? 'bg-black/80 text-white'
-                : 'bg-white/20 text-white/60'
+                ? 'bg-white text-black'
+                : 'bg-black/60 text-white/60'
             }`}
           >
             {l.ukrainian}
           </button>
           <button
             onClick={() => updateSettings({ language: 'ru' })}
-            className={`flex-1 flex items-center justify-center text-lg font-bold transition-colors ${
+            className={`flex-1 flex items-center justify-center text-base font-bold transition-colors ${
               settings.language === 'ru'
-                ? 'bg-gradient-to-r from-teal-500 to-teal-600 text-white'
-                : 'bg-white/20 text-white/60'
+                ? 'bg-gradient-to-r from-purple-600 to-teal-500 text-white'
+                : 'bg-black/60 text-white/60'
             }`}
           >
             {l.russian}
@@ -99,10 +100,10 @@ export default function SettingsScreen() {
         </div>
 
         {/* Custom Interval */}
-        <div className="bg-gradient-to-r from-pink-600/80 to-pink-700/80 rounded-2xl p-4">
-          <h2 className="text-white font-bold text-lg mb-2">{l.customInterval}</h2>
-          <div className="flex items-center gap-2 text-white">
-            <span className="text-sm">{l.every}</span>
+        <div className="bg-black/80 rounded-2xl p-8" style={{ paddingTop: '12px', paddingBottom: '12px' }}>
+          <h2 className="text-white font-bold text-lg mb-3" style={{ paddingLeft: '8px' }}>{l.customInterval}</h2>
+          <div className="flex items-center gap-3 text-white" style={{ paddingLeft: '8px', paddingRight: '8px' }}>
+            <span className="text-sm text-white/80">{l.every}</span>
             <input
               type="number"
               min={1}
@@ -111,23 +112,24 @@ export default function SettingsScreen() {
               onChange={(e) =>
                 updateSettings({ customInterval: Math.max(1, parseInt(e.target.value) || 1) })
               }
-              className="w-12 h-8 bg-white/20 rounded-lg px-2 text-center outline-none border border-white/20 text-sm"
+              style={{ padding: '0 8px' }}
+              className="w-14 h-7 bg-white/10 rounded-xl text-center outline-none border border-white/20 focus:border-white/50 text-sm font-bold"
             />
-            <span className="text-sm">{l.turnsFromAi}</span>
+            <span className="text-sm text-white/80">{l.turnsFromAi}</span>
           </div>
         </div>
 
         {/* Add Custom Question */}
-        <div className="bg-black/70 rounded-2xl p-4">
-          <h2 className="text-white font-bold text-lg mb-3">{l.addQuestion}</h2>
+        <div className="bg-black/80 rounded-2xl p-4">
+          <h2 className="text-white font-bold text-lg mb-3" style={{ paddingLeft: '8px', paddingRight: '8px' }}>{l.addQuestion}</h2>
 
           {/* Type selector */}
-          <div className="flex rounded-xl overflow-hidden h-10 mb-3">
+          <div className="flex rounded-xl overflow-hidden h-10 mb-3" style={{ marginLeft: '8px', marginRight: '8px' }}>
             <button
               onClick={() => setQuestionType('truth')}
               className={`flex-1 flex items-center justify-center text-sm font-bold transition-colors ${
                 questionType === 'truth'
-                  ? 'bg-gradient-to-r from-purple-600 to-purple-500 text-white'
+                  ? 'bg-gradient-to-r from-purple-600 to-purple-400 text-white'
                   : 'bg-white/10 text-white/50'
               }`}
             >
@@ -137,7 +139,7 @@ export default function SettingsScreen() {
               onClick={() => setQuestionType('dare')}
               className={`flex-1 flex items-center justify-center text-sm font-bold transition-colors ${
                 questionType === 'dare'
-                  ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white'
+                  ? 'bg-gradient-to-r from-teal-600 to-teal-400 text-white'
                   : 'bg-white/10 text-white/50'
               }`}
             >
@@ -146,18 +148,19 @@ export default function SettingsScreen() {
           </div>
 
           {/* Input + Send */}
-          <div className="relative">
+          <div className="relative" style={{ marginLeft: '8px', marginRight: '8px', marginTop: '8px' }}>
             <textarea
               value={questionText}
               onChange={(e) => setQuestionText(e.target.value)}
               placeholder={l.text}
               rows={2}
-              className="w-full bg-white rounded-xl px-3 py-2 pr-10 outline-none resize-none text-black text-sm placeholder:text-gray-400"
+              style={{ padding: '10px 40px 10px 12px' }}
+              className="w-full bg-white/10 rounded-xl outline-none resize-none text-white text-sm placeholder:text-white/30 border border-white/10 focus:border-white/30 transition-colors"
             />
             <button
               onClick={handleAddQuestion}
               disabled={!questionText.trim()}
-              className="absolute right-2 bottom-2 text-gray-400 hover:text-purple-500 disabled:text-gray-300 transition-colors"
+              className="absolute right-2 bottom-2.5 text-white/40 hover:text-white disabled:text-white/20 transition-colors"
             >
               <Send className="w-5 h-5" />
             </button>
@@ -165,19 +168,19 @@ export default function SettingsScreen() {
         </div>
 
         {/* Two-column custom questions */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3 pb-2">
           {/* Truth column */}
-          <div className="bg-black/60 rounded-2xl p-3 min-h-[200px]">
-            <h3 className="text-white font-bold text-base mb-2 text-center">{l.myTruth}</h3>
-            <div className="space-y-2">
+          <div className="bg-black/70 rounded-2xl p-3 min-h-[160px]" style={{ paddingLeft: '8px', paddingRight: '8px' }}>
+            <h3 className="text-white font-bold text-sm mb-3 text-center">{l.myTruth}</h3>
+            <div className="flex flex-col gap-2">
               {truthQuestions.map((q) => {
                 const idx = customQuestions.indexOf(q)
                 return (
-                  <div key={idx} className="flex items-start gap-1 text-white/80 text-xs border-b border-white/10 pb-1.5">
-                    <span className="flex-1 leading-snug">{q.text}</span>
+                  <div key={idx} className="flex items-start gap-1 text-white/80 text-xs border-b border-white/10 pb-2 px-2">
+                    <span className="flex-1 leading-snug line-clamp-2 min-w-0 overflow-hidden">{q.text}</span>
                     <button
                       onClick={() => removeCustomQuestion(idx)}
-                      className="text-white/40 hover:text-red-400 shrink-0"
+                      className="text-white/30 hover:text-red-400 shrink-0 transition-colors"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -188,17 +191,17 @@ export default function SettingsScreen() {
           </div>
 
           {/* Dare column */}
-          <div className="bg-black/60 rounded-2xl p-3 min-h-[200px]">
-            <h3 className="text-white font-bold text-base mb-2 text-center">{l.myDare}</h3>
-            <div className="space-y-2">
+          <div className="bg-black/70 rounded-2xl p-3 min-h-[160px]" style={{ paddingLeft: '8px', paddingRight: '8px' }}>
+            <h3 className="text-white font-bold text-sm mb-3 text-center">{l.myDare}</h3>
+            <div className="flex flex-col gap-2">
               {dareQuestions.map((q) => {
                 const idx = customQuestions.indexOf(q)
                 return (
-                  <div key={idx} className="flex items-start gap-1 text-white/80 text-xs border-b border-white/10 pb-1.5">
-                    <span className="flex-1 leading-snug">{q.text}</span>
+                  <div key={idx} className="flex items-start gap-1 text-white/80 text-xs border-b border-white/10 pb-2 px-2">
+                    <span className="flex-1 leading-snug line-clamp-2 min-w-0 overflow-hidden">{q.text}</span>
                     <button
                       onClick={() => removeCustomQuestion(idx)}
-                      className="text-white/40 hover:text-red-400 shrink-0"
+                      className="text-white/30 hover:text-red-400 shrink-0 transition-colors"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>

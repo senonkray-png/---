@@ -1,3 +1,4 @@
+import { ClickToComponent } from 'click-to-react-component'
 import { useGameStore } from './store/gameStore'
 import StartScreen from './components/StartScreen'
 import SettingsScreen from './components/SettingsScreen'
@@ -8,6 +9,7 @@ export default function App() {
 
   return (
     <>
+      <ClickToComponent />
       {screen === 'start' && <StartScreen />}
       {screen === 'settings' && <SettingsScreen />}
       {screen === 'game' && <GameScreen />}
