@@ -198,9 +198,7 @@ export default function GameScreen() {
         style={
           questionText
             ? {
-                backgroundImage: 'url(/bg-sunset.jpg)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
+                background: 'linear-gradient(180deg, #ffffff 0%, #ffffff 30%, #ffdce9 54%, #ffb3cc 75%, #ff80b0 100%)',
               }
             : {
                 backgroundImage: 'url(/sky.jpg)',
@@ -209,18 +207,16 @@ export default function GameScreen() {
               }
         }
       />
-      {/* dim overlay on question screen */}
-      {questionText && (
-        <div className="absolute inset-0 -z-10 bg-black/55" />
-      )}
 
       {/* ── Header ── */}
       <div className="flex items-center px-3 py-1 shrink-0">
         <button
           onClick={() => setScreen('start')}
-          className="w-11 h-11 flex items-center justify-center rounded-full bg-black/20 backdrop-blur-sm active:scale-90 transition-transform"
+          className={`w-11 h-11 flex items-center justify-center rounded-full active:scale-90 transition-transform ${
+            questionText ? 'bg-black/8' : 'bg-black/20 backdrop-blur-sm'
+          }`}
         >
-          <ChevronLeft className="w-7 h-7 text-white" />
+          <ChevronLeft className={`w-7 h-7 ${questionText ? 'text-black/40' : 'text-white'}`} />
         </button>
       </div>
 
@@ -261,7 +257,7 @@ export default function GameScreen() {
 
         {loading && (
           <div className="flex-1 flex items-center justify-center">
-            <Loader2 className="w-16 h-16 text-white/60 animate-spin" />
+            <Loader2 className={`w-16 h-16 animate-spin ${questionText ? 'text-black/30' : 'text-white/60'}`} />
           </div>
         )}
 
@@ -278,37 +274,79 @@ export default function GameScreen() {
 
         {/* ── Question card ── */}
         {questionText && !loading && (
-          <div className="flex-1 flex items-center justify-center w-full" style={{ paddingLeft: '16px', paddingRight: '16px' }}>
-            <div className="animate-fade-in w-full max-w-sm">
-              {/* Arch top */}
-              <svg viewBox="0 0 320 70" className="w-full" preserveAspectRatio="none">
+          <div className="flex-1 flex items-center justify-center w-full animate-fade-in" style={{ paddingLeft: '16px', paddingRight: '16px', paddingBottom: '8px' }}>
+            <div className="w-full max-w-sm">
+              {/* Mughal arch top */}
+              <svg viewBox="0 0 340 220" className="w-full" style={{ display: 'block' }}>
+                {/* Black fill */}
                 <path
-                  d="M0 70 L0 35 Q0 0 38 0 L282 0 Q320 0 320 35 L320 70 Z"
-                  fill="#130f0e"
+                  d="M 0 220 L 0 115 C 0 45 80 0 170 0 C 260 0 340 45 340 115 L 340 220 Z"
+                  fill="#111111"
                 />
+                {/* White border — outer */}
                 <path
-                  d="M18 70 L18 45 Q18 14 50 14 L270 14 Q302 14 302 45 L302 70"
-                  fill="none"
-                  stroke="#3a3530"
-                  strokeWidth="1.5"
+                  d="M 0 220 L 0 115 C 0 45 80 0 170 0 C 260 0 340 45 340 115 L 340 220"
+                  fill="none" stroke="white" strokeWidth="3.5"
                 />
+                {/* White border 1 */}
                 <path
-                  d="M32 70 L32 52 Q32 24 60 24 L260 24 Q288 24 288 52 L288 70"
-                  fill="none"
-                  stroke="#4a4540"
-                  strokeWidth="1"
+                  d="M 13 220 L 13 118 C 13 56 91 12 170 12 C 249 12 327 56 327 118 L 327 220"
+                  fill="none" stroke="white" strokeWidth="2.5"
+                />
+                {/* White border 2 */}
+                <path
+                  d="M 25 220 L 25 121 C 25 65 101 22 170 22 C 239 22 315 65 315 121 L 315 220"
+                  fill="none" stroke="white" strokeWidth="2"
+                />
+                {/* White border 3 — inner */}
+                <path
+                  d="M 36 220 L 36 124 C 36 73 109 31 170 31 C 231 31 304 73 304 124 L 304 220"
+                  fill="none" stroke="white" strokeWidth="1.5"
                 />
               </svg>
+              {/* Card body */}
               <div
-                className="rounded-b-3xl border-x-2 border-b-2 -mt-px"
-                style={{ background: '#130f0e', borderColor: '#3a3530', paddingLeft: '24px', paddingRight: '24px', paddingTop: '28px', paddingBottom: '28px' }}
+                style={{
+                  background: '#111111',
+                  borderLeft: '3.5px solid white',
+                  borderRight: '3.5px solid white',
+                  borderBottom: '3.5px solid white',
+                  borderRadius: '0 0 28px 28px',
+                  paddingLeft: '28px',
+                  paddingRight: '28px',
+                  paddingTop: '24px',
+                  paddingBottom: '32px',
+                  position: 'relative',
+                  minHeight: '180px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
               >
+                {/* Inner decorative frame */}
+                <div style={{
+                  position: 'absolute',
+                  top: '12px', left: '14px', right: '14px', bottom: '12px',
+                  border: '1.5px solid rgba(255,255,255,0.35)',
+                  borderRadius: '16px',
+                  pointerEvents: 'none',
+                }} />
                 {isCustom && (
-                  <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full mb-3 inline-block">
+                  <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full mb-3 inline-block" style={{ position: 'relative' }}>
                     {l.customQuestion}
                   </span>
                 )}
-                <p className="text-white font-bold text-xl leading-snug text-center">
+                <p style={{
+                  color: 'white',
+                  fontFamily: '"Cormorant Garamond", "Palatino Linotype", Georgia, serif',
+                  fontStyle: 'italic',
+                  fontWeight: 800,
+                  fontSize: '22px',
+                  lineHeight: '1.5',
+                  textAlign: 'center',
+                  position: 'relative',
+                }}>
                   {questionText}
                 </p>
               </div>
@@ -388,30 +426,37 @@ export default function GameScreen() {
       </div>
 
       {/* ── Bottom controls ── */}
-      <div className="shrink-0 px-4 pt-2 space-y-3">
+      <div className="shrink-0 space-y-3" style={{ paddingLeft: '16px', paddingRight: '16px', paddingTop: '10px', paddingBottom: '10px' }}>
         {questionText && !loading && (
           <>
-            <div className="flex items-center justify-center gap-8">
+            <div className="flex items-center justify-center gap-10">
               <button
                 onClick={handleLike}
-                className={`transition-transform active:scale-90 ${liked ? 'text-red-400' : 'text-white/60'}`}
+                className="transition-transform active:scale-90"
               >
-                <Heart className="w-8 h-8" fill={liked ? 'currentColor' : 'none'} />
+                <Heart
+                  className="w-9 h-9"
+                  style={{ color: liked ? '#e91e63' : '#111111' }}
+                  fill={liked ? 'currentColor' : 'none'}
+                />
               </button>
-              <button onClick={handleReroll} className="text-white/60 active:scale-90 transition-transform">
-                <RefreshCw className="w-7 h-7" />
+              <button onClick={handleReroll} className="active:scale-90 transition-transform">
+                <RefreshCw className="w-8 h-8" style={{ color: '#111111' }} />
               </button>
               <button
                 onClick={handleDislike}
-                className={`transition-transform active:scale-90 ${disliked ? 'text-red-400' : 'text-white/60'}`}
+                className="transition-transform active:scale-90"
               >
-                <HeartCrack className="w-7 h-7" />
+                <HeartCrack
+                  className="w-9 h-9"
+                  style={{ color: disliked ? '#e91e63' : '#111111' }}
+                />
               </button>
             </div>
             <button
               onClick={handleNext}
               className="w-full rounded-2xl py-4 flex items-center justify-center gap-2 active:scale-[0.97] transition-transform"
-              style={{ background: 'rgba(0,0,0,0.55)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(8px)' }}
+              style={{ background: '#111111' }}
             >
               <span className="text-white text-xl font-bold">{l.nextTurn}</span>
               <ChevronRight className="w-6 h-6 text-white" />
