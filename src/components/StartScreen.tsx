@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useGameStore } from '../store/gameStore'
-import { ChevronLeft, Settings } from 'lucide-react'
+import { t } from '../services/i18n'
+import { ChevronLeft, Settings, Trash2 } from 'lucide-react'
 
 function GenderToggle({
   gender,
@@ -10,26 +11,27 @@ function GenderToggle({
   onChange: (g: 'male' | 'female') => void
 }) {
   return (
-    <div className="flex items-center rounded-xl overflow-hidden border-2 border-white/40 h-10 w-20 shrink-0">
+    <div className="flex items-center rounded-full overflow-hidden h-10 w-20 shrink-0 bg-black/60">
       <button
         onClick={() => onChange('male')}
         className={`flex-1 h-full flex items-center justify-center transition-colors ${
-          gender === 'male' ? 'bg-[#1a2f5e]' : 'bg-white/30'
+          gender === 'male' ? 'bg-red-600' : ''
         }`}
       >
-        <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
-          <path d="M12 2a5 5 0 1 0 0 10A5 5 0 0 0 12 2zm0 12c-5.33 0-8 2.67-8 4v2h16v-2c0-1.33-2.67-4-8-4z" />
+        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
+          <circle cx="12" cy="8" r="4" fill={gender === 'male' ? '#fff' : '#e94560'} />
+          <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6" fill={gender === 'male' ? '#fff' : '#e94560'} />
         </svg>
       </button>
       <button
         onClick={() => onChange('female')}
         className={`flex-1 h-full flex items-center justify-center transition-colors ${
-          gender === 'female' ? 'bg-[#e94560]' : 'bg-white/30'
+          gender === 'female' ? 'bg-red-600' : ''
         }`}
       >
-        <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
-          <path d="M12 2a5 5 0 1 0 0 10A5 5 0 0 0 12 2zm0 12c-5.33 0-8 2.67-8 4v2h16v-2c0-1.33-2.67-4-8-4z" />
-          <path d="M12 2a4.5 4.5 0 1 0 0 9A4.5 4.5 0 0 0 12 2zM12 13c-4 0-7 2-7 3.5V18h14v-1.5c0-1.5-3-3.5-7-3.5z" />
+        <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none">
+          <circle cx="12" cy="8" r="4" fill={gender === 'female' ? '#fff' : '#fff'} />
+          <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6" fill={gender === 'female' ? '#fff' : '#fff'} />
         </svg>
       </button>
     </div>
@@ -39,7 +41,16 @@ function GenderToggle({
 export default function StartScreen() {
   const [newName, setNewName] = useState('')
   const [showInput, setShowInput] = useState(false)
-  const { players, addPlayer, removePlayer, setPlayerGender, setScreen } = useGameStore()
+  const {
+    players,
+    addPlayer,
+    removePlayer,
+    setPlayerGender,
+    settings,
+    updateSettings,
+    setScreen,
+  } = useGameStore()
+  const l = t(settings.language)
 
   const handleAdd = () => {
     const trimmed = newName.trim()
@@ -58,72 +69,84 @@ export default function StartScreen() {
 
   return (
     <div
-      className="flex flex-col h-dvh w-full"
+      className="flex flex-col h-dvh w-full relative"
       style={{
-        background: 'linear-gradient(160deg, #4ecbd4 0%, #3ab8c8 100%)',
-        paddingTop: 'max(env(safe-area-inset-top), 16px)',
-        paddingBottom: 'max(env(safe-area-inset-bottom), 16px)',
+        paddingTop: 'max(env(safe-area-inset-top), 12px)',
+        paddingBottom: 'max(env(safe-area-inset-bottom), 12px)',
       }}
     >
+      {/* Background */}
+      <div
+        className="absolute inset-0 -z-10"
+        style={{
+          background: 'linear-gradient(180deg, #2d1b33 0%, #8b4c5e 30%, #c88a6e 55%, #d4a574 70%, #b8856a 100%)',
+        }}
+      />
+
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-3 shrink-0">
-        <button className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center active:bg-white/30 transition-colors">
-          <ChevronLeft className="w-6 h-6 text-white" />
+      <div className="flex items-center justify-between px-4 py-2 shrink-0">
+        <button className="w-12 h-12 flex items-center justify-center">
+          <ChevronLeft className="w-8 h-8 text-white/70" />
         </button>
         <button
           onClick={() => setScreen('settings')}
-          className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center active:bg-white/30 transition-colors"
+          className="w-12 h-12 flex items-center justify-center"
         >
-          <Settings className="w-5 h-5 text-white" />
+          <Settings className="w-7 h-7 text-white/70" />
         </button>
       </div>
 
-      {/* Players list */}
-      <div className="flex-1 overflow-y-auto px-5 py-2">
-        {players.map((p, i) => (
-          <div key={p.id}>
-            <div className="flex items-center gap-3 py-3">
-              <button
-                onClick={() => removePlayer(p.id)}
-                className="w-8 h-8 shrink-0 flex items-center justify-center"
-              >
-                <svg viewBox="0 0 24 24" className="w-6 h-6">
-                  <line x1="4" y1="4" x2="20" y2="20" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-                  <line x1="20" y1="4" x2="4" y2="20" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-                </svg>
-              </button>
+      {/* Player list */}
+      <div className="flex-1 overflow-y-auto px-4 py-1 space-y-3">
+        {players.map((p) => (
+          <div
+            key={p.id}
+            className="flex items-center gap-2 animate-fade-in"
+          >
+            {/* Trash */}
+            <button
+              onClick={() => removePlayer(p.id)}
+              className="w-10 h-10 bg-black/70 rounded-xl flex items-center justify-center shrink-0"
+            >
+              <Trash2 className="w-5 h-5 text-white/80" />
+            </button>
 
-              <span className="flex-1 text-white font-bold text-2xl sm:text-3xl leading-none tracking-tight">
+            {/* Name pill */}
+            <div
+              className="flex-1 h-14 flex items-center justify-center rounded-2xl px-4"
+              style={{
+                background: 'linear-gradient(90deg, rgba(80,80,80,0.7) 0%, rgba(150,150,150,0.5) 100%)',
+              }}
+            >
+              <span className="text-white font-bold text-xl sm:text-2xl tracking-tight">
                 {p.name}
               </span>
-
-              <GenderToggle
-                gender={p.gender}
-                onChange={(g) => setPlayerGender(p.id, g)}
-              />
             </div>
-            {i < players.length - 1 && (
-              <div className="h-px bg-white/30 ml-11" />
-            )}
+
+            {/* Gender toggle */}
+            <GenderToggle
+              gender={p.gender}
+              onChange={(g) => setPlayerGender(p.id, g)}
+            />
           </div>
         ))}
 
-        {/* Add player input */}
+        {/* Inline input */}
         {showInput && (
-          <div className="flex items-center gap-3 py-3 animate-fade-in">
-            <div className="w-8 h-8 shrink-0" />
+          <div className="flex items-center gap-2 animate-fade-in">
+            <div className="w-10 shrink-0" />
             <input
               autoFocus
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Введите имя"
-              className="flex-1 bg-white/20 rounded-xl px-4 py-2 outline-none text-white text-xl font-bold placeholder:text-white/50 border border-white/30 focus:border-white/60"
+              placeholder={l.enterName}
               maxLength={20}
+              className="flex-1 h-14 bg-black/40 rounded-2xl px-4 outline-none text-white text-xl font-bold placeholder:text-white/40 border border-white/20 focus:border-white/50"
             />
             <button
               onClick={handleAdd}
-              className="bg-white/20 hover:bg-white/30 rounded-xl px-4 py-2 text-white font-bold transition-colors"
+              className="h-14 px-5 bg-black/60 rounded-2xl text-white font-bold transition-colors"
             >
               OK
             </button>
@@ -131,58 +154,47 @@ export default function StartScreen() {
         )}
       </div>
 
-      {/* Add player circular button */}
-      {!showInput && (
-        <div className="flex justify-center items-center py-4 shrink-0">
-          <button
-            onClick={() => setShowInput(true)}
-            className="relative w-28 h-28 sm:w-32 sm:h-32 flex items-center justify-center active:scale-95 transition-transform"
-          >
-            {/* Curved text */}
-            <svg
-              viewBox="0 0 120 120"
-              className="absolute inset-0 w-full h-full"
-            >
-              <defs>
-                <path
-                  id="circlePath"
-                  d="M 60,60 m -42,0 a 42,42 0 1,1 84,0 a 42,42 0 1,1 -84,0"
-                />
-              </defs>
-              <text
-                fontSize="10.5"
-                fill="white"
-                fontWeight="600"
-                letterSpacing="1.5"
-              >
-                <textPath href="#circlePath" startOffset="5%">
-                  ДОДАТИ НОВОГО ГРАВЦЯ •
-                </textPath>
-              </text>
-            </svg>
-            {/* Circle button */}
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[#1a2f5e] flex items-center justify-center shadow-lg">
-              <svg viewBox="0 0 24 24" className="w-7 h-7 fill-white">
-                <path d="M12 5v14M5 12h14" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-              </svg>
-            </div>
-          </button>
+      {/* Bottom controls */}
+      <div className="shrink-0 px-4 space-y-3 pt-2">
+        {/* Roulette toggle */}
+        <div className="flex items-center gap-3 bg-black/60 rounded-2xl px-4 py-3">
+          <span className="text-2xl">🎡</span>
+          <span className="flex-1 text-white font-bold text-lg">{l.roulette}</span>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              checked={settings.randomWheel}
+              onChange={(e) => updateSettings({ randomWheel: e.target.checked })}
+              className="sr-only peer"
+            />
+            <div className="w-14 h-7 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[3px] after:start-[3px] after:bg-white after:rounded-full after:h-[22px] after:w-[22px] after:transition-all peer-checked:bg-green-500" />
+          </label>
         </div>
-      )}
 
-      {/* Start Button */}
-      <div className="px-5 pt-2 shrink-0">
-        <button
-          onClick={() => { if (canStart) setScreen('game') }}
-          disabled={!canStart}
-          className={`w-full rounded-2xl py-5 sm:py-6 text-2xl sm:text-3xl font-bold tracking-wide transition-all ${
-            canStart
-              ? 'bg-white text-[#e94560] active:scale-[0.97]'
-              : 'bg-white/40 text-white/60 cursor-not-allowed'
-          }`}
-        >
-          {canStart ? 'Грати' : 'Мін. 2 гравці'}
-        </button>
+        {/* Start + Add row */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => { if (canStart) setScreen('game') }}
+            disabled={!canStart}
+            className={`flex-1 h-16 rounded-2xl text-2xl font-bold transition-all ${
+              canStart
+                ? 'bg-white/90 text-black active:scale-[0.97]'
+                : 'bg-white/30 text-white/50 cursor-not-allowed'
+            }`}
+          >
+            {canStart ? l.start : l.min2players}
+          </button>
+          {!showInput && (
+            <button
+              onClick={() => setShowInput(true)}
+              className="w-16 h-16 bg-black/70 rounded-2xl flex items-center justify-center shrink-0 active:scale-95 transition-transform"
+            >
+              <svg viewBox="0 0 24 24" className="w-8 h-8" fill="none">
+                <path d="M12 5v14M5 12h14" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )

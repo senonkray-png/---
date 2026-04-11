@@ -17,6 +17,7 @@ export interface Settings {
   randomWheel: boolean
   customInterval: number
   apiKey: string
+  language: 'ru' | 'uk'
 }
 
 export interface AiPreferences {
@@ -77,6 +78,7 @@ export const useGameStore = create<GameState>()(
         randomWheel: false,
         customInterval: 5,
         apiKey: import.meta.env.VITE_OPENROUTER_API_KEY ?? '',
+        language: 'ru',
       },
       customQuestions: [],
       history: [],
