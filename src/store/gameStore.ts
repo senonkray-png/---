@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { loadFeedback, saveFeedback } from '../services/supabaseService'
 
 export interface Player {
   id: string
@@ -59,6 +60,7 @@ interface GameState {
   // AI preferences
   addLike: (text: string) => void
   addDislike: (text: string) => void
+  loadPreferences: () => Promise<void>
 
   // Turn
   nextTurn: () => void
@@ -133,21 +135,44 @@ export const useGameStore = create<GameState>()(
           history: [...s.history.slice(-99), text],
         })),
 
-      addLike: (text) =>
+      addLike: (text) => {
         set((s) => ({
           aiPreferences: {
             ...s.aiPreferences,
-            likes: [...s.aiPreferences.likes.slice(-49), text],
+            likes: s.aiPreferences.likes.includes(text)
+              ? s.aiPreferences.likes
+              : [...s.aiPreferences.likes.slice(-49), text],
+            // remove from dislikes if it was there
+            dislikes: s.aiPreferences.dislikes.filter((d) => d !== text),
           },
-        })),
+        }))
+        saveFeedback(text, 'like')
+      },
 
-      addDislike: (text) =>
+      addDislike: (text) => {
         set((s) => ({
           aiPreferences: {
             ...s.aiPreferences,
-            dislikes: [...s.aiPreferences.dislikes.slice(-49), text],
+            dislikes: s.aiPreferences.dislikes.includes(text)
+              ? s.aiPreferences.dislikes
+              : [...s.aiPreferences.dislikes.slice(-49), text],
+            // remove from likes if it was there
+            likes: s.aiPreferences.likes.filter((l) => l !== text),
           },
-        })),
+        }))
+        saveFeedback(text, 'dislike')
+      },
+
+      loadPreferences: async () => {
+        const remote = await loadFeedback()
+        if (remote.likes.length === 0 && remote.dislikes.length === 0) return
+        set((s) => ({
+          aiPreferences: {
+            likes: Array.from(new Set([...s.aiPreferences.likes, ...remote.likes])).slice(-50),
+            dislikes: Array.from(new Set([...s.aiPreferences.dislikes, ...remote.dislikes])).slice(-50),
+          },
+        }))
+      },
 
       nextTurn: () => {
         const { players, turnState, settings } = get()
