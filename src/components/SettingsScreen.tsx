@@ -131,10 +131,10 @@ export default function SettingsScreen() {
           const isOpen = openLevels[lvl]
 
           return (
-            <div key={lvl} className="rounded-2xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
+            <div key={lvl} className="rounded-2xl" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
               {/* Level header */}
               <div
-                className={`flex items-center gap-3 bg-gradient-to-r ${levelColors[lvl]} cursor-pointer`}
+                className={`flex items-center gap-3 bg-gradient-to-r ${levelColors[lvl]} cursor-pointer ${isOpen ? 'rounded-t-2xl' : 'rounded-2xl'}`}
                 style={{ paddingTop: '12px', paddingBottom: '12px', paddingLeft: '16px', paddingRight: '12px' }}
                 onClick={() => setOpenLevels((p) => ({ ...p, [lvl]: !p[lvl] }))}
               >
@@ -152,7 +152,7 @@ export default function SettingsScreen() {
               </div>
 
               {isOpen && (
-                <div className="bg-black/80 flex flex-col gap-3" style={{ paddingTop: '12px', paddingBottom: '16px', paddingLeft: '12px', paddingRight: '12px' }}>
+                <div className="bg-black/80 rounded-b-2xl flex flex-col gap-3" style={{ paddingTop: '12px', paddingBottom: '16px', paddingLeft: '12px', paddingRight: '12px' }}>
                   {/* Interval */}
                   <div className="flex items-center gap-3">
                     <span className="text-white/70 text-sm">{l.levelInterval}:</span>
@@ -211,7 +211,7 @@ export default function SettingsScreen() {
                         <div className="flex flex-col gap-1">
                           {truthQ.map((q) => (
                             <div key={q.id} className="flex items-start gap-1 border-b border-white/10 pb-1">
-                              <span className="flex-1 text-white/80 text-xs leading-snug line-clamp-2 min-w-0">{q.text}</span>
+                              <span className="flex-1 text-white/80 text-xs leading-snug min-w-0">{q.text}</span>
                               <button onClick={() => removeCustomQuestion(q.id)} className="text-white/30 hover:text-red-400 shrink-0 transition-colors" style={{ paddingTop: '2px' }}>
                                 <Trash2 className="w-3 h-3" />
                               </button>
@@ -224,7 +224,7 @@ export default function SettingsScreen() {
                         <div className="flex flex-col gap-1">
                           {dareQ.map((q) => (
                             <div key={q.id} className="flex items-start gap-1 border-b border-white/10 pb-1">
-                              <span className="flex-1 text-white/80 text-xs leading-snug line-clamp-2 min-w-0">{q.text}</span>
+                              <span className="flex-1 text-white/80 text-xs leading-snug min-w-0">{q.text}</span>
                               <button onClick={() => removeCustomQuestion(q.id)} className="text-white/30 hover:text-red-400 shrink-0 transition-colors" style={{ paddingTop: '2px' }}>
                                 <Trash2 className="w-3 h-3" />
                               </button>
