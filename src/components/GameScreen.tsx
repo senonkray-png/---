@@ -26,7 +26,7 @@ export default function GameScreen() {
     setCurrentPlayer,
     incrementAiCounter,
     markCustomQuestionUsed,
-    resetCustomQuestions,
+    resetLevelQuestions,
     setScreen,
   } = useGameStore()
 
@@ -68,37 +68,43 @@ export default function GameScreen() {
     })
   }, [players, setCurrentPlayer])
 
-  const shouldUseCustom = useCallback((): boolean => {
-    const { aiCounter } = turnState
-    const available = customQuestions.filter((q) => !q.used)
-    return (
-      settings.customInterval > 0 &&
-      (aiCounter + 1) % settings.customInterval === 0 &&
-      available.length > 0
-    )
-  }, [turnState, customQuestions, settings.customInterval])
+  const getPartnerName = useCallback((): string => {
+    const oppositeGender = currentPlayer.gender === 'male' ? 'female' : 'male'
+    const partner =
+      players.find((p) => p.id !== currentPlayer.id && p.gender === oppositeGender) ||
+      players.find((p) => p.id !== currentPlayer.id)
+    return partner?.name ?? ''
+  }, [currentPlayer, players])
+
+  const getCustomLevel = useCallback((): 1 | 2 | 3 | null => {
+    const counter = turnState.aiCounter + 1
+    const levels: Array<1 | 2 | 3> = [3, 2, 1]
+    for (const lvl of levels) {
+      const enabledKey = `level${lvl}Enabled` as 'level1Enabled' | 'level2Enabled' | 'level3Enabled'
+      const intervalKey = `level${lvl}Interval` as 'level1Interval' | 'level2Interval' | 'level3Interval'
+      const enabled = settings[enabledKey]
+      const interval = settings[intervalKey]
+      const available = customQuestions.filter((q) => !q.used && q.level === lvl)
+      if (enabled && interval > 0 && counter % interval === 0 && available.length > 0) {
+        return lvl
+      }
+    }
+    return null
+  }, [turnState, customQuestions, settings])
 
   const getCustomQuestion = useCallback(
-    (type: 'truth' | 'dare'): string | null => {
-      const available = customQuestions
-        .map((q, i) => ({ ...q, index: i }))
-        .filter((q) => !q.used && q.type === type)
-      if (available.length === 0) {
-        const any = customQuestions
-          .map((q, i) => ({ ...q, index: i }))
-          .filter((q) => !q.used)
-        if (any.length === 0) return null
-        const pick = any[Math.floor(Math.random() * any.length)]
-        markCustomQuestionUsed(pick.index)
-        if (customQuestions.filter((q) => !q.used).length <= 1) resetCustomQuestions()
-        return pick.text
-      }
-      const pick = available[Math.floor(Math.random() * available.length)]
-      markCustomQuestionUsed(pick.index)
-      if (customQuestions.filter((q) => !q.used).length <= 1) resetCustomQuestions()
-      return pick.text
+    (type: 'truth' | 'dare', level: 1 | 2 | 3): string | null => {
+      const typed = customQuestions.filter((q) => !q.used && q.level === level && q.type === type)
+      const pool = typed.length > 0 ? typed : customQuestions.filter((q) => !q.used && q.level === level)
+      if (pool.length === 0) return null
+      const pick = pool[Math.floor(Math.random() * pool.length)]
+      markCustomQuestionUsed(pick.id)
+      const remaining = customQuestions.filter((q) => !q.used && q.level === level && q.id !== pick.id)
+      if (remaining.length === 0) resetLevelQuestions(level)
+      const partnerName = getPartnerName()
+      return pick.text.replace(/\{partner\}/g, partnerName)
     },
-    [customQuestions, markCustomQuestionUsed, resetCustomQuestions]
+    [customQuestions, markCustomQuestionUsed, resetLevelQuestions, getPartnerName]
   )
 
   const handleChoice = async (type: 'truth' | 'dare') => {
@@ -112,8 +118,9 @@ export default function GameScreen() {
 
     incrementAiCounter()
 
-    if (shouldUseCustom()) {
-      const custom = getCustomQuestion(type)
+    const customLevel = getCustomLevel()
+    if (customLevel !== null) {
+      const custom = getCustomQuestion(type, customLevel)
       if (custom) {
         setQuestionText(custom)
         setIsCustom(true)
@@ -198,7 +205,9 @@ export default function GameScreen() {
         style={
           questionText
             ? {
-                background: 'linear-gradient(180deg, #ffffff 0%, #ffffff 30%, #ffdce9 54%, #ffb3cc 75%, #ff80b0 100%)',
+                backgroundImage: 'url(/bg-sunset.jpg)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
               }
             : {
                 backgroundImage: 'url(/sky.jpg)',
@@ -222,28 +231,38 @@ export default function GameScreen() {
 
       {/* ── Player name banner (question screen only) ── */}
       {questionText && (
-        <div className="flex justify-center shrink-0 px-4 mt-2 mb-1">
-          <div
-            className="relative px-10 py-2.5"
-            style={{
-              background:
-                'linear-gradient(135deg, #7a7a7a 0%, #c0c0c0 25%, #e8e8e8 50%, #c0c0c0 75%, #7a7a7a 100%)',
-              clipPath: 'polygon(7% 0%, 93% 0%, 100% 50%, 93% 100%, 7% 100%, 0% 50%)',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.45)',
-            }}
-          >
-            <div className="text-center">
+        <div className="flex justify-center shrink-0 mt-2 mb-1">
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            {/* Ghost text — задаёт ширину контейнера, невидим */}
+            <div style={{ visibility: 'hidden', whiteSpace: 'nowrap', paddingLeft: '52px', paddingRight: '52px', paddingTop: '10px', paddingBottom: '10px' }}>
+              <p style={{ fontSize: '9px', letterSpacing: '0.22em' }}>{l.playerTurn}</p>
+              <p style={{ fontSize: '28px', fontWeight: 900 }}>{displayName}</p>
+            </div>
+            {/* Ribbon image — растягивается под ширину ghostа */}
+            <img
+              src="/1.png"
+              alt=""
+              draggable={false}
+              className="select-none"
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'fill' }}
+            />
+            {/* Visible text overlay */}
+            <div
+              style={{
+                position: 'absolute', inset: 0,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                pointerEvents: 'none',
+              }}
+            >
               <p
-                className="uppercase font-semibold text-black/50"
-                style={{ fontSize: '9px', letterSpacing: '0.22em' }}
+                className="uppercase font-semibold"
+                style={{ fontSize: '9px', letterSpacing: '0.22em', color: 'rgba(0,0,0,0.5)', whiteSpace: 'nowrap' }}
               >
                 {l.playerTurn}
               </p>
               <p
-                className={`font-black text-black leading-none mt-0.5 transition-all ${
-                  rouletteActive ? 'roulette-active' : ''
-                }`}
-                style={{ fontSize: '34px' }}
+                className={`font-black leading-none mt-0.5 transition-all ${rouletteActive ? 'roulette-active' : ''}`}
+                style={{ fontSize: '28px', color: '#111111', whiteSpace: 'nowrap' }}
               >
                 {displayName}
               </p>
@@ -274,50 +293,25 @@ export default function GameScreen() {
 
         {/* ── Question card ── */}
         {questionText && !loading && (
-          <div className="flex-1 flex items-center justify-center w-full animate-fade-in" style={{ paddingLeft: '16px', paddingRight: '16px', paddingBottom: '8px' }}>
-            <div className="w-full max-w-sm">
-              {/* Mughal arch top */}
-              <svg viewBox="0 0 340 220" className="w-full" style={{ display: 'block' }}>
-                {/* Black fill */}
-                <path
-                  d="M 0 220 L 0 115 C 0 45 80 0 170 0 C 260 0 340 45 340 115 L 340 220 Z"
-                  fill="#111111"
-                />
-                {/* White border — outer */}
-                <path
-                  d="M 0 220 L 0 115 C 0 45 80 0 170 0 C 260 0 340 45 340 115 L 340 220"
-                  fill="none" stroke="white" strokeWidth="3.5"
-                />
-                {/* White border 1 */}
-                <path
-                  d="M 13 220 L 13 118 C 13 56 91 12 170 12 C 249 12 327 56 327 118 L 327 220"
-                  fill="none" stroke="white" strokeWidth="2.5"
-                />
-                {/* White border 2 */}
-                <path
-                  d="M 25 220 L 25 121 C 25 65 101 22 170 22 C 239 22 315 65 315 121 L 315 220"
-                  fill="none" stroke="white" strokeWidth="2"
-                />
-                {/* White border 3 — inner */}
-                <path
-                  d="M 36 220 L 36 124 C 36 73 109 31 170 31 C 231 31 304 73 304 124 L 304 220"
-                  fill="none" stroke="white" strokeWidth="1.5"
-                />
-              </svg>
-              {/* Card body */}
+          <div
+            className="flex-1 flex w-full animate-fade-in"
+            style={{ paddingLeft: '16px', paddingRight: '16px', paddingBottom: '8px', paddingTop: '4px', alignItems: 'stretch' }}
+          >
+            <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+              {/* Card body — fills all available vertical space */}
               <div
                 style={{
-                  background: '#111111',
-                  borderLeft: '3.5px solid white',
-                  borderRight: '3.5px solid white',
-                  borderBottom: '3.5px solid white',
-                  borderRadius: '0 0 28px 28px',
+                  background: 'rgba(17, 17, 17, 0.55)',
+                  backdropFilter: 'blur(12px)',
+                  WebkitBackdropFilter: 'blur(12px)',
+                  border: '3.5px solid white',
+                  borderRadius: '28px',
                   paddingLeft: '28px',
                   paddingRight: '28px',
-                  paddingTop: '24px',
-                  paddingBottom: '32px',
+                  paddingTop: '28px',
+                  paddingBottom: '40px',
                   position: 'relative',
-                  minHeight: '180px',
+                  flex: 1,
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
@@ -342,8 +336,8 @@ export default function GameScreen() {
                   fontFamily: '"Cormorant Garamond", "Palatino Linotype", Georgia, serif',
                   fontStyle: 'italic',
                   fontWeight: 800,
-                  fontSize: '22px',
-                  lineHeight: '1.5',
+                  fontSize: 'clamp(24px, 3.5dvh, 42px)',
+                  lineHeight: '1.55',
                   textAlign: 'center',
                   position: 'relative',
                 }}>
@@ -358,7 +352,7 @@ export default function GameScreen() {
         {!questionText && !loading && (
           <div className="relative w-full" style={{ maxWidth: '1120px' }}>
             <img
-              src="/signpost.png"
+              src={settings.language === 'uk' ? '/signpostUK.png' : '/signpost.png'}
               alt=""
               draggable={false}
               className="w-full h-auto select-none translate-y-21 scale-125 max-w-none"
@@ -433,30 +427,36 @@ export default function GameScreen() {
               <button
                 onClick={handleLike}
                 className="transition-transform active:scale-90"
+                style={{ paddingTop: '8px', paddingBottom: '8px' }}
               >
                 <Heart
-                  className="w-9 h-9"
-                  style={{ color: liked ? '#e91e63' : '#111111' }}
+                  className="w-14 h-14"
+                  style={{ color: liked ? '#e91e63' : 'white' }}
                   fill={liked ? 'currentColor' : 'none'}
                 />
               </button>
-              <button onClick={handleReroll} className="active:scale-90 transition-transform">
-                <RefreshCw className="w-8 h-8" style={{ color: '#111111' }} />
+              <button
+                onClick={handleReroll}
+                className="active:scale-90 transition-transform"
+                style={{ paddingTop: '8px', paddingBottom: '8px' }}
+              >
+                <RefreshCw className="w-12 h-12" style={{ color: 'white' }} />
               </button>
               <button
                 onClick={handleDislike}
                 className="transition-transform active:scale-90"
+                style={{ paddingTop: '8px', paddingBottom: '8px' }}
               >
                 <HeartCrack
-                  className="w-9 h-9"
-                  style={{ color: disliked ? '#e91e63' : '#111111' }}
+                  className="w-14 h-14"
+                  style={{ color: disliked ? '#e91e63' : 'white' }}
                 />
               </button>
             </div>
             <button
               onClick={handleNext}
-              className="w-full rounded-2xl py-4 flex items-center justify-center gap-2 active:scale-[0.97] transition-transform"
-              style={{ background: '#111111' }}
+              className="w-full rounded-2xl flex items-center justify-center gap-2 active:scale-[0.97] transition-transform"
+              style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(12px)', border: '1.5px solid rgba(255,255,255,0.4)', paddingTop: '20px', paddingBottom: '20px' }}
             >
               <span className="text-white text-xl font-bold">{l.nextTurn}</span>
               <ChevronRight className="w-6 h-6 text-white" />

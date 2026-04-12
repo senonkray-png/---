@@ -27,6 +27,13 @@ const translations = {
     addApiKey: 'Добавьте API ключ в настройках',
     emptyResponse: 'Пустой ответ от ИИ',
     genError: 'Ошибка генерации',
+    level1: 'Уровень 1',
+    level2: 'Уровень 2',
+    level3: 'Уровень 3',
+    levelOn: 'Вкл',
+    levelOff: 'Выкл',
+    levelInterval: 'Интервал',
+    levelIntervalHint: 'ходов',
   },
   uk: {
     playerTurn: 'Хід гравця',
@@ -56,6 +63,13 @@ const translations = {
     addApiKey: 'Додайте API ключ в налаштуваннях',
     emptyResponse: 'Порожня відповідь від ІІ',
     genError: 'Помилка генерації',
+    level1: 'Рівень 1',
+    level2: 'Рівень 2',
+    level3: 'Рівень 3',
+    levelOn: 'Увімк',
+    levelOff: 'Вимк',
+    levelInterval: 'Інтервал',
+    levelIntervalHint: 'ходів',
   },
 } as const
 
